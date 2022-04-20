@@ -5,6 +5,20 @@ import groovy.json.*
 class ScholixClient {
     def BASE_URL = 'http://api.scholexplorer.openaire.eu/v2'
 
+    def cache_loop(file,closure) {
+        def jsonSlurper = new JsonSlurper()
+
+        new File(file).withReader('UTF-8') {
+            reader -> {
+                def line
+                while( (line = reader.readLine()) != null) {
+                    if (closure) 
+                        closure.call(jsonSlurper.parseText(line))
+                }
+            }
+        }
+    }
+    
     def linkProvider() {
         def jsonSlurper = new JsonSlurper()
 
@@ -47,7 +61,7 @@ class ScholixClient {
         return json
     }
 
-    def links(linkProvider, closure) {
+    def links(linkProvider, harvestedAfter = "", closure) {
         def jsonSlurper = new JsonSlurper()
 
         def linkProviderEsc = java.net.URLEncoder.encode(linkProvider, "UTF-8")
@@ -55,7 +69,11 @@ class ScholixClient {
         def currentPage = 0
 
         do {
-            def connection = new URL("${BASE_URL}/Links?linkProvider=${linkProviderEsc}&page=${currentPage}").openConnection()
+            def url = "${BASE_URL}/Links?linkProvider=${linkProviderEsc}&harvestedAfter=${harvestedAfter}&page=${currentPage}"
+            
+            System.err.println("${url} + ${totalPages}")
+
+            def connection = new URL(url).openConnection()
         
             connection.setRequestProperty('Accept','application/json')
 
