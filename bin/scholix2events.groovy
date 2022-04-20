@@ -2,6 +2,9 @@
 
 import scholix.ScholixClient
 import groovy.json.JsonOutput
+import groovy.transform.Field
+
+@Field String MOCK_BASE_POD = 'https://bellow2.ugent.be/test/scholix/'
 
 if (args.size() == 0) {
     System.err.println("usage: scholix2events.groovy file")
@@ -65,7 +68,7 @@ def announceLinkProcessor(evt) {
 
             event['target'] = [
                 'id'    : "${target['base']}/about#us" ,
-                'inbox' : "${target['base']}/inbox" ,
+                'inbox' : "${target['base']}/inbox/" ,
                 'type'  : 'Organization'
             ]
             
@@ -80,7 +83,7 @@ def announceLinkProcessor(evt) {
 
             event['target'] = [
                 'id'    : "${source['base']}/about#us" ,
-                'inbox' : "${source['base']}/inbox" ,
+                'inbox' : "${source['base']}/inbox/" ,
                 'type'  : 'Organization'
             ] 
 
@@ -99,11 +102,36 @@ def relationCandidates(data) {
     def candidates = [];
 
     for (target in data) {
+         def id       = target['ID']
          def idurl    = target['IDURL']
          def idscheme = target['IDScheme']
 
-         if (! idscheme.equals('D-Net Identifier') && 
-                idurl && idurl.startsWith('http')) {
+         if (idscheme.equals('D-Net Identifier')) {
+             // TODO How to resolve
+         }
+         else if (idscheme.equals('handle') && id) {
+            def location = resolve("http://hdl.handle.net/${id}")
+
+            if (location) {
+                def base = baseurl(location)
+
+                candidates.push([
+                    'url'      : "http://hdl.handle.net/${id}" ,
+                    'location' : location ,
+                    'base'     : base
+                ])
+            }
+         }
+         else if (idscheme.equals('pmid') && id) {
+            def location = "https://pubmed.ncbi.nlm.nih.gov/${id}"
+            def base = baseurl(location)
+            candidates.push([
+                'url'      : location,
+                'location' : location,
+                'base'     : base
+            ])
+         }
+         else if (idurl && idurl.startsWith('http')) {
             def location = resolve(idurl)
             
             if (location) {
@@ -159,6 +187,11 @@ def resolve(url) {
 
 def baseurl(url) {
     def u = new URL(url)
-    def base = u.getProtocol() + "://" + u.getHost()
-    return base
+    
+    if (MOCK_BASE_POD) {
+        return MOCK_BASE_POD + u.getHost()
+    }
+    else {
+        return "https://" + u.getHost()
+    }
 }
