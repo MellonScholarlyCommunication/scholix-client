@@ -5,7 +5,7 @@ import groovy.json.JsonOutput
 import java.net.HttpURLConnection
 
 if (args.size() == 0) {
-    System.err.println("usage: events2inbox.groovy file")
+    System.err.println("usage: events2inbox.groovy events-file")
     System.exit(1)
 }
 

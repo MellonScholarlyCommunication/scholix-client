@@ -7,7 +7,7 @@ import groovy.transform.Field
 @Field String MOCK_BASE_POD = 'https://bellow2.ugent.be/test/scholix/'
 
 if (args.size() == 0) {
-    System.err.println("usage: scholix2events.groovy file")
+    System.err.println("usage: scholix2events.groovy json-ld-file")
     System.exit(1)
 }
 
@@ -41,7 +41,7 @@ def announceLinkProcessor(evt) {
         ] ,
         'origin' : [
             'id' : 'https://mellonscholarlycommunication.github.io/about#us' ,
-            'name' : 'Mellon Scholix Forward Service' ,
+            'name' : 'UGent/Mellon JSON-LD/AS2 Notification Generator for Scholix' ,
             'type' : 'Application'
         ] ,
         'object' : [
