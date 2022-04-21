@@ -24,5 +24,11 @@ bin/scholix_client.groovy links Lirias > data/lirias.json
 Convert JSON to events
 
 ```
-bin/scholix2events.groovy data/lirias.json > data.lirias.events
+bin/scholix2events.groovy data/lirias.json > data/lirias.events
+```
+
+Create inbox folder for the events
+
+```
+bin/mkinbox.sh data/lirias.events out
 ```
