@@ -1,5 +1,9 @@
 #!/bin/bash
-
+#
+# Usage: mkinbox.sh event-file outdir
+#
+# The generated outdir should be placed on your SOLIDBASE
+#
 SOLIDBASE="https://bellow2.ugent.be/test/scholix"
 WEBPROFILE="https://bellow2.ugent.be/test/profile/card#me"
 EMAIL="test@test.edu"
@@ -71,3 +75,5 @@ cat <<EOF > ${OUTDIR}/.acl
     acl:mode
         acl:Read, acl:Write, acl:Control.
 EOF
+
+echo "Ok. Move now \`${OUTDIR}\` contents to \`${SOLIDBASE}\`."
