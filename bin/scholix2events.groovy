@@ -5,6 +5,7 @@ import groovy.json.JsonOutput
 import groovy.transform.Field
 
 @Field String MOCK_BASE_POD = 'https://bellow2.ugent.be/test/scholix/'
+@Field String EMAIL = "Patrick.Hochstenbach@UGent.be"
 
 if (args.size() == 0) {
     System.err.println("usage: scholix2events.groovy json-ld-file")
@@ -36,8 +37,9 @@ def announceLinkProcessor(evt) {
         'published' : published ,
         'actor' : [
             'id' : 'https://scholexplorer.openaire.eu/#about' ,
-            'name' : 'OPENAIRE Scholexplorer' ,
-            'type' : 'OPENAIRE'
+            'name' : 'OpenAIRE ScholeXplorer' ,
+            'inbox' : 'https://scholexplorer.openaire.eu/inbox/' ,
+            'type' : 'Organization'
         ] ,
         'origin' : [
             'id' : 'https://mellonscholarlycommunication.github.io/about#us' ,
@@ -45,7 +47,7 @@ def announceLinkProcessor(evt) {
             'type' : 'Application'
         ] ,
         'object' : [
-            'id' : relationshipId ,
+            'id' : "urn:uuid:${relationshipId}" ,
             'type' : 'Relationship' ,
             'relationship' : "http://www.scholix.org/${relationshipType}" ,
         ]
@@ -61,10 +63,10 @@ def announceLinkProcessor(evt) {
         for (target in targetCandidates) {
     
             event['object']['subject'] = source['url']
-            event['object']['object']  = target['location']
+            event['object']['object']  = target['resolved']
 
             // Send an event to the target
-            event['context'] = target['location']
+            event['context'] = target['resolved']
 
             event['target'] = [
                 'id'    : "${target['base']}/about#us" ,
@@ -76,10 +78,10 @@ def announceLinkProcessor(evt) {
 
             // Send an event to the source
 
-            event['object']['subject'] = source['location']
+            event['object']['subject'] = source['resolved']
             event['object']['object']  = target['url']
 
-            event['context'] = source['location']
+            event['context'] = source['resolved']
 
             event['target'] = [
                 'id'    : "${source['base']}/about#us" ,
@@ -117,17 +119,26 @@ def relationCandidates(data) {
 
                 candidates.push([
                     'url'      : "http://hdl.handle.net/${id}" ,
-                    'location' : location ,
+                    'resolved' : location ,
                     'base'     : base
                 ])
             }
+         }
+         else if (idscheme.equals('pmc') && id) {
+            def location = "http://europepmc.org/articles/${id}"
+            def base = baseurl(location)
+            candidates.push([
+                'url'      : location,
+                'resolved' : location,
+                'base'     : base
+            ]) 
          }
          else if (idscheme.equals('pmid') && id) {
             def location = "https://pubmed.ncbi.nlm.nih.gov/${id}"
             def base = baseurl(location)
             candidates.push([
                 'url'      : location,
-                'location' : location,
+                'resolved' : location,
                 'base'     : base
             ])
          }
@@ -139,10 +150,16 @@ def relationCandidates(data) {
 
                 candidates.push([
                     'url'      : idurl ,
-                    'location' : location ,
+                    'resolved' : location ,
                     'base'     : base
                 ])
             }
+         }
+         else {
+             System.err.println(
+                    'Skipped : idscheme(' + idscheme + ') ' + 
+                    'id(' + id + ') ' + 
+                    'idurl(' + idurl + ') '); 
          }
     }
 
@@ -165,6 +182,11 @@ def idType(list, scheme) {
 
 def resolve(url) {
     def connection = new URL(url).openConnection()
+
+    connection.setRequestProperty('User-Agent',
+        'GroovyBib/1.1 (https://github.com/MellonScholarlyCommunication/scholix-client; ' +
+        'mailto:' + EMAIL + ')'  
+    )
 
     connection.setRequestMethod('HEAD')
     connection.setInstanceFollowRedirects(false)
