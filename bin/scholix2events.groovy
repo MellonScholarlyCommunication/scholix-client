@@ -6,14 +6,20 @@ import groovy.transform.Field
 
 @Field String MOCK_BASE_POD = 'https://bellow2.ugent.be/test/scholix/'
 @Field String EMAIL = "Patrick.Hochstenbach@UGent.be"
+@Field CLIENT = new ScholixClient()
 
 if (args.size() == 0) {
     System.err.println("usage: scholix2events.groovy json-ld-file")
     System.exit(1)
 }
 
-new ScholixClient().cache_loop(args[0], {
-    x -> announceLinkProcessor(x)
+CLIENT.cache_loop(args[0], {
+    x -> {
+        def start = CLIENT.time()
+        announceLinkProcessor(x)
+        def end = CLIENT.time()
+        CLIENT.duration("announceLinkProcessor", start, end)
+    }
 })
 
 def announceLinkProcessor(evt) {
@@ -96,7 +102,6 @@ def announceLinkProcessor(evt) {
 
 def sendEvent(event) {
     def json = JsonOutput.toJson(event)
-    // println(JsonOutput.prettyPrint(json))
     println(json)
 }
 
@@ -181,6 +186,8 @@ def idType(list, scheme) {
 }
 
 def resolve(url) {
+    def start = CLIENT.time()
+
     def connection = new URL(url).openConnection()
 
     connection.setRequestProperty('User-Agent',
@@ -193,18 +200,26 @@ def resolve(url) {
 
     def location = connection.getHeaderField('location')
 
+    def result
+
     if (! location) {
-        return url
+        result =  url
     }
     else if (location.startsWith('http://hdl.handle.net')) {
-        return resolve(location)
+        result = resolve(location)
     }
     else if (location.startsWith('http')) {
-        return location
+        result = location
     }
     else {
-        return url
+        result = url
     }
+
+    def end = CLIENT.time()
+
+    CLIENT.duration("resolve(${url}", start, end )
+
+    return result
 }
 
 def baseurl(url) {

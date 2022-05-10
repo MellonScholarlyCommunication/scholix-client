@@ -1,9 +1,29 @@
 package scholix
 
 import groovy.json.*
+import groovy.time.*
+import java.text.SimpleDateFormat
 
 class ScholixClient {
     def BASE_URL = 'http://api.scholexplorer.openaire.eu/v2'
+
+    def time() {
+        return new Date()
+    }
+
+    def duration(str,start,end) {
+        def TimeDuration duration = TimeCategory.minus(end,start)
+        def dateFormatter = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss")
+        def endTime = dateFormatter.format(end)
+        System.err.println("${endTime} ${str} : ${duration}")
+    }
+
+    def verbose(str) {
+        def end = new Date()
+        def dateFormatter = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss")
+        def endTime = dateFormatter.format(end)
+        System.err.println("${endTime} ${str}")
+    }
 
     def cache_loop(file,closure) {
         def jsonSlurper = new JsonSlurper()

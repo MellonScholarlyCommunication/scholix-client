@@ -3,6 +3,9 @@
 import scholix.ScholixClient
 import groovy.json.JsonOutput
 import java.net.HttpURLConnection
+import groovy.transform.Field
+
+@Field CLIENT = new ScholixClient()
 
 if (args.size() == 0) {
     System.err.println("usage: events2inbox.groovy events-file")
@@ -10,7 +13,15 @@ if (args.size() == 0) {
 }
 
 new ScholixClient().cache_loop(args[0], {
-    x -> sendNotification(x)
+    x -> {
+        def start = CLIENT.time()
+        
+        sendNotification(x)
+
+        def end = CLIENT.time()
+
+        CLIENT.duration("sendNotification", start, end)
+    }
 })
 
 def sendNotification(evt) {
@@ -31,6 +42,6 @@ def sendNotification(evt) {
             writer << notification
         }
 
-        println(responseCode + " " + targetInbox)
+        CLIENT.verbose("post(${targetInbox}) : code = ${responseCode}")
     }
 }
