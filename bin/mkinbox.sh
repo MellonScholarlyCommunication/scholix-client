@@ -24,10 +24,11 @@ while getopts "b:e:w:" opt; do
     esac
 done
 
+shift $((OPTIND-1))
+[ "${1:-}" = "--" ] && shift
+
 EVENTFILE=$1
 OUTDIR=$2
-
-exit 0
 
 if [[ "${EVENTFILE}" == "" ]] || [[ "${OUTDIR}" == "" ]]; then
     show_help
