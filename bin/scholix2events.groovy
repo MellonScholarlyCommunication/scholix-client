@@ -1,19 +1,41 @@
 #!/usr/bin/env groovy -cp ./lib
 
+@Grab(group='commons-cli', module='commons-cli', version='1.4')
+
 import scholix.ScholixClient
 import groovy.json.JsonOutput
 import groovy.transform.Field
+import groovy.cli.commons.CliBuilder
 
 @Field String MOCK_BASE_POD = 'https://bellow2.ugent.be/test/scholix/'
 @Field String EMAIL = "Patrick.Hochstenbach@UGent.be"
 @Field CLIENT = new ScholixClient()
 
-if (args.size() == 0) {
-    System.err.println("usage: scholix2events.groovy json-ld-file")
-    System.exit(1)
+def cli = new CliBuilder(
+    usage: 'scholix2events.groovy [options] data-file' 
+)
+
+cli.with {
+    b(longOpt: 'base' , 'solid web base' , args: 1, required: false)
+    e(longOpt: 'email' , 'admin email address' , args: 1, required: false)
 }
 
-CLIENT.cache_loop(args[0], {
+def opt = cli.parse(args)
+
+if (opt.arguments().size() == 0) {
+    cli.usage()
+    return
+}
+
+if (opt.b) {
+    MOCK_BASE_POD = opt.b
+}
+
+if (opt.e) {
+    EMAIL = opt.e
+}
+
+CLIENT.cache_loop(opt.arguments()[0], {
     x -> {
         def start = CLIENT.time()
         announceLinkProcessor(x)

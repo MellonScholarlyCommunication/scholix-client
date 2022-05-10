@@ -4,15 +4,33 @@
 #
 # The generated outdir should be placed on your SOLIDBASE
 #
+
 SOLIDBASE="https://bellow2.ugent.be/test/scholix"
-WEBPROFILE="https://bellow2.ugent.be/test/profile/card#me"
+WEBID="https://bellow2.ugent.be/test/profile/card#me"
 EMAIL="test@test.edu"
+
+function show_help {
+    echo "usage: $0 [-b <solidbase>] [-e <email>] [-w webid] event-file outdir"
+}
+
+while getopts "b:e:w:" opt; do
+    case "$opt" in
+    b)  SOLIDBASE=$OPTARG
+        ;;
+    e)  EMAIL=$OPTARG
+        ;;
+    w)  WEBID=$OPTARG
+        ;;
+    esac
+done
 
 EVENTFILE=$1
 OUTDIR=$2
 
+exit 0
+
 if [[ "${EVENTFILE}" == "" ]] || [[ "${OUTDIR}" == "" ]]; then
-    echo "usage: $0 event-file outdir"
+    show_help
     exit 1
 fi
 
@@ -64,7 +82,7 @@ cat <<EOF > ${OUTDIR}/.acl
 # unless specifically authorized in other .acl resources.
 <#owner>
     a acl:Authorization;
-    acl:agent <${WEBPROFILE}>;
+    acl:agent <${WEBID}>;
     # Optional owner email, to be used for account recovery:
     acl:agent <mailto:${EMAIL}>;
     # Set the access to the root storage folder itself
