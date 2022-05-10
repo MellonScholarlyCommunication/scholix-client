@@ -239,7 +239,7 @@ def resolve(url) {
 
     def end = CLIENT.time()
 
-    CLIENT.duration("resolve(${url}", start, end )
+    CLIENT.duration("resolve(${url})", start, end )
 
     return result
 }
