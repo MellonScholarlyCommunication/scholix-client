@@ -98,7 +98,7 @@ def announceLinkProcessor(evt) {
 
             event['target'] = [
                 'id'    : "${target['base']}/about#us" ,
-                'inbox' : "${target['base']}/inbox/" ,
+                'inbox' : "${target['inbox']}" ,
                 'type'  : 'Organization'
             ]
             
@@ -113,7 +113,7 @@ def announceLinkProcessor(evt) {
 
             event['target'] = [
                 'id'    : "${source['base']}/about#us" ,
-                'inbox' : "${source['base']}/inbox/" ,
+                'inbox' : "${source['inbox']}" ,
                 'type'  : 'Organization'
             ] 
 
@@ -143,42 +143,49 @@ def relationCandidates(data) {
 
             if (location) {
                 def base = baseurl(location)
+                def inbox = inbox(location)
 
                 candidates.push([
                     'url'      : "http://hdl.handle.net/${id}" ,
-                    'resolved' : location ,
-                    'base'     : base
+                    'resolved' : location , 
+                    'base'     : base ,
+                    'inbox'    : inbox
                 ])
             }
          }
          else if (idscheme.equals('pmc') && id) {
             def location = "http://europepmc.org/articles/${id}"
             def base = baseurl(location)
+            def inbox = inbox(location)
             candidates.push([
                 'url'      : location,
                 'resolved' : location,
-                'base'     : base
+                'base'     : base,
+                'inbox'    : inbox
             ]) 
          }
          else if (idscheme.equals('pmid') && id) {
             def location = "https://pubmed.ncbi.nlm.nih.gov/${id}"
             def base = baseurl(location)
+            def inbox = inbox(location)
             candidates.push([
                 'url'      : location,
                 'resolved' : location,
-                'base'     : base
+                'base'     : base,
+                'inbox'    : inbox,
             ])
          }
          else if (idurl && idurl.startsWith('http')) {
             def location = resolve(idurl)
-            
+
             if (location) {
                 def base = baseurl(location)
-
+                def inbox = inbox(location)
                 candidates.push([
                     'url'      : idurl ,
                     'resolved' : location ,
-                    'base'     : base
+                    'base'     : base ,
+                    'inbox'    : inbox 
                 ])
             }
          }
@@ -214,7 +221,7 @@ def resolve(url) {
 
     connection.setRequestProperty('User-Agent',
         'GroovyBib/1.1 (https://github.com/MellonScholarlyCommunication/scholix-client; ' +
-        'mailto:' + EMAIL + ')'  
+        'mailto:' + EMAIL + ')'
     )
 
     connection.setRequestMethod('HEAD')
@@ -253,4 +260,49 @@ def baseurl(url) {
     else {
         return "https://" + u.getHost()
     }
+}
+
+def inbox(url) {
+    def start = CLIENT.time()
+
+    def connection = new URL(url).openConnection()
+    connection.setRequestMethod('HEAD')
+    connection.setInstanceFollowRedirects(false)
+    def link = connection.getHeaderField('link')
+
+    def end = CLIENT.time()
+
+    def links = parse_link(link)
+
+    def inbox = links.find { item -> item['rel'].equals("http://www.w3.org/ns/ldp#inbox") }
+
+    CLIENT.duration("inbox(${url})", start, end )
+
+    if (inbox) {
+        return inbox['link']
+    }
+    else {
+        return baseurl(url) + '/inbox/'
+    }
+}
+
+def parse_link(link) {
+    def result = [];
+
+    if (! link) {
+        return result;
+    }
+
+    for (part in link.split(/,/)) {
+        def url_rel = part.split(/;\s*/)
+        def url = url_rel[0]
+                    .replaceAll(/^\s*</,"")
+                    .replaceAll(/>\s*$/,"")
+        def rel = url_rel[1]
+                    .replaceAll(/\s*rel="/,"")
+                    .replaceAll(/"\s*$/,"")
+        result.push( [ rel : rel , link : url ] )
+    }
+
+    return result
 }
