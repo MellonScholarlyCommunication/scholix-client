@@ -47,7 +47,8 @@ def extractArtifact(pub) {
         if (fullText && fullText.size() > 0) {
             def mainFile = fullText[0]['url']
             def access   = fullText[0]['access']
-            // println("${created} ${id} ${mainFile} ${access}")
+            
+            System.err.println("${created} ${id} ${mainFile} ${access}")
 
             def citation = EXTRACTOR.parse(mainFile)
 
