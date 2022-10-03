@@ -6,7 +6,8 @@ from Scholix data as provided by [ScholeXplorer](https://scholexplorer.openaire.
 # Dependency
 
 - Groovy (use [SDKMAN!](https://sdkman.io))
-
+- Anystyle (use `gem install anystyle-cli`)
+- 
 # Usage
 
 List all providers
