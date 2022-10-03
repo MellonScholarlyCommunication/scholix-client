@@ -12,7 +12,7 @@ import java.io.ByteArrayOutputStream
 import groovy.cli.commons.CliBuilder
 
 class Extractor {
-    def script = './citations/url2citations.sh'
+    def script = './script/url2citations.sh'
 
     def parse(url) {
         def sout = new StringBuilder(), serr = new StringBuilder()
@@ -21,12 +21,8 @@ class Extractor {
         proc.waitForOrKill(10000) // Timeout
 
         def data = parseJson(sout.toString())
-        if (!data)
-            return data
 
-        def jsonld = asJSONLD(url,data) 
-
-        asTurtle(jsonld)
+        return data
     }
 
     def parseJson(str) {

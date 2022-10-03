@@ -20,7 +20,7 @@ command:
     System.exit(1)
 }
 
-def cli      = new CliBuilder()
+def cli = new CliBuilder()
 
 def options = cli.parse(args)
 
