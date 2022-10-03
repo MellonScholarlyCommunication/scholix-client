@@ -33,7 +33,7 @@ if (opt.arguments().size() == 0) {
 
 def input = opt.arguments()[0]
 def type  = opt.t
-def sleep = opt.s
+def seconds = opt.s
 
 if (input.equals("-")) {
     input = "/dev/stdin"
@@ -43,8 +43,8 @@ if (!type) {
     type = "turtle"
 }
 
-if (sleep) {
-    sleep = sleep as Integer 
+if (seconds) {
+    seconds = seconds as Integer 
 }
 else {
     sleep = 0
@@ -54,18 +54,18 @@ if (input.matches("^http.*")) {
     extractOne(input,type)
 }
 else {
-    main_loop(input, type, sleep)
+    main_loop(input, type, seconds)
 }
 
-def main_loop(file, type, sleep) {
+def main_loop(file, type, seconds) {
     new File(file).withReader('UTF-8') {
         reader -> {
             def line
             while( (line = reader.readLine()) != null) {
                 extractOne(line,type)
 
-                if (sleep > 0) {
-                    sleep(1000 * sleep)
+                if (seconds > 0) {
+                    sleep(1000 * seconds)
                 }
             }
         }
