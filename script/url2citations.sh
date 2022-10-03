@@ -2,7 +2,7 @@
 
 URL=$1
 TMPDIR=/tmp
-ANYSTYLE=/usr/local/lib/ruby/gems/3.1.0/bin/anystyle
+ANYSTYLE=anystyle
 
 if [[ "${URL}" == "" ]]; then
     echo "$0 url"

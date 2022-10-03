@@ -48,6 +48,7 @@ class Extractor {
     def asJSONLD(url,json) {
         def jsonld = [:]
         jsonld['@id'] = url
+        jsonld['@type'] = 'schema:CreativeWork' 
         jsonld['@context'] = [
             dct: 'http://purl.org/dc/terms/' ,
             foaf: 'http://xmlns.com/foaf/0.1/' ,
@@ -56,7 +57,7 @@ class Extractor {
             schema: 'http://schema.org/' ,
             skos: 'http://www.w3.org/2004/02/skos/core#' ,
             citations: [
-                '@id': 'dct:bibliographicCitation'
+                '@id': 'schema:citation'
             ] ,
             title: [
                 '@id': 'dct:title' 
