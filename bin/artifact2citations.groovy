@@ -54,10 +54,10 @@ if (input.matches("^http.*")) {
     extractOne(input,type)
 }
 else {
-    main_loop(input, type)
+    main_loop(input, type, sleep)
 }
 
-def main_loop(file, type) {
+def main_loop(file, type, sleep) {
     new File(file).withReader('UTF-8') {
         reader -> {
             def line
