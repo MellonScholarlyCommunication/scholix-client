@@ -65,7 +65,7 @@ def main_loop(file, type, sleep) {
                 extractOne(line,type)
 
                 if (sleep > 0) {
-                    Thread.sleep(1000 * sleep)
+                    sleep(1000 * sleep)
                 }
             }
         }
