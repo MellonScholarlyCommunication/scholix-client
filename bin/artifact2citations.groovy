@@ -21,6 +21,7 @@ def cli = new CliBuilder(
 
 cli.with {
     t(longOpt: 'type' , 'output type (default turtle)' , args: 1, required: false)
+    s(longOpt: 'sleep' , 'sleep', args: 1, required: false)
 }
 
 def opt = cli.parse(args)
@@ -32,6 +33,7 @@ if (opt.arguments().size() == 0) {
 
 def input = opt.arguments()[0]
 def type  = opt.t
+def sleep = opt.s
 
 if (input.equals("-")) {
     input = "/dev/stdin"
@@ -41,20 +43,40 @@ if (!type) {
     type = "turtle"
 }
 
-main_loop(input, type)
+if (sleep) {
+    sleep = Integer.parseInt(sleep)
+}
+else {
+    sleep = 0
+}
+
+if (input.matches("^http.*")) {
+    extractOne(input,type)
+}
+else {
+    main_loop(input, type)
+}
 
 def main_loop(file, type) {
     new File(file).withReader('UTF-8') {
         reader -> {
             def line
             while( (line = reader.readLine()) != null) {
-                def start = CLIENT.time()
-                extractArtifact(line, type)
-                def end = CLIENT.time()
-                CLIENT.duration("extractArtifact", start, end)
+                extractOne(line,type)
+
+                if (sleep > 0) {
+                    Thread.sleep(1000 * sleep)
+                }
             }
         }
     }
+}
+
+def extractOne(url,type) {
+    def start = CLIENT.time()
+    extractArtifact(url, type)
+    def end = CLIENT.time()
+    CLIENT.duration("extractArtifact", start, end)
 }
 
 def extractArtifact(url, type) {
