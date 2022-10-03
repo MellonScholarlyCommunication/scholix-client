@@ -44,7 +44,7 @@ if (!type) {
 }
 
 if (sleep) {
-    sleep = Integer.parseInt(sleep)
+    sleep = sleep as Integer 
 }
 else {
     sleep = 0
