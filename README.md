@@ -10,26 +10,28 @@ from Scholix data as provided by [ScholeXplorer](https://scholexplorer.openaire.
 - 
 # Usage
 
-List all providers
+List all sources / targets
 
 ```
-bin/scholix_client.groovy providers
+bin/scholix_client.groovy inSource
+bin/scholix_client.groovy inTarget
 ```
 
-Fetch JSON records for one provider
+Fetch JSON records for one source/target
 
 ```
-bin/scholix_client.groovy links Lirias > data/lirias.json
+bin/scholix_client.groovy links targetPublisher "Ghent University" > data/ghent.json
+bin/scholix_client.groovy links sourcePublisher "Ghent University" >> data/ghent.json
 ```
 
 Convert JSON to events
 
 ```
-bin/scholix2events.groovy data/lirias.json > data/lirias.events
+bin/scholix2events.groovy data/ghent.json > data/ghent.events
 ```
 
 Create inbox folder for the events
 
 ```
-bin/mkinbox.sh data/lirias.events out
+bin/mkinbox.sh data/ghent.events out
 ```

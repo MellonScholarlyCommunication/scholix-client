@@ -14,7 +14,7 @@ command:
    inSource  - list all publishers that provide source objects in Scholix
    inTarget  - list all publishers that provide target objects in Scholix
    links     - list all Scholix links
-                    - needs {provider}
+                    - needs {targetPublisher|sourcePublisher} {name}
                     - optional {harvestedAfter}
 """)
     System.exit(1)
@@ -40,14 +40,15 @@ else if (function == 'inTarget') {
     doInTarget()
 }
 else if (function == 'links' && options.arguments().size() > 1 ) {
-    def provider = options.arguments()[1]
+    def filterName = options.arguments()[1]
+    def filterValue = options.arguments()[2]
     def harvestedAfter = null
 
-    if (options.arguments().size() > 2) {
-        harvestedAfter = options.arguments()[2]
+    if (options.arguments().size() > 3) {
+        harvestedAfter = options.arguments()[3]
     }
 
-    doLinks(provider, harvestedAfter)
+    doLinks(filterName, filterValue, harvestedAfter)
 }
 else {
     usage()
@@ -77,8 +78,8 @@ def doInTarget() {
     }
 }
 
-def doLinks(linkProvider, harvestedAfter) {
-    def links = new ScholixClient().links(linkProvider, harvestedAfter, {
+def doLinks(filterName, filterValue, harvestedAfter) {
+    def links = new ScholixClient().links(filterName, filterValue, harvestedAfter, {
         x -> println(JsonOutput.toJson(x))
     })
 }

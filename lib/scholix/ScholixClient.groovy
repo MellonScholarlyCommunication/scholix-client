@@ -81,15 +81,16 @@ class ScholixClient {
         return json
     }
 
-    def links(linkProvider, harvestedAfter = "", closure) {
+    def links(filterName,filterValue, harvestedAfter = "", closure) {
         def jsonSlurper = new JsonSlurper()
 
-        def linkProviderEsc = java.net.URLEncoder.encode(linkProvider, "UTF-8")
+        def filterNameEsc  = java.net.URLEncoder.encode(filterName, "UTF-8")
+        def filterValueEsc = java.net.URLEncoder.encode(filterValue, "UTF-8")
         def totalPages = 0
         def currentPage = 0
 
         do {
-            def url = "${BASE_URL}/Links?linkProvider=${linkProviderEsc}&harvestedAfter=${harvestedAfter}&page=${currentPage}"
+            def url = "${BASE_URL}/Links?${filterNameEsc}=${filterValueEsc}&harvestedAfter=${harvestedAfter}&page=${currentPage}"
             
             System.err.println("${url} + ${totalPages}")
 
