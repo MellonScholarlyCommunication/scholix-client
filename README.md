@@ -7,7 +7,8 @@ from Scholix data as provided by [ScholeXplorer](https://scholexplorer.openaire.
 
 - Groovy (use [SDKMAN!](https://sdkman.io))
 - Anystyle (use `gem install anystyle-cli`)
-- 
+- Jena riot (JSON-LD processing is required `brew install jena`)
+
 # Usage
 
 List all sources / targets
