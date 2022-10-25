@@ -36,3 +36,11 @@ Create inbox folder for the events
 ```
 bin/mkinbox.sh data/ghent.events out
 ```
+
+Create a Gephi graph for a repository
+
+```
+bin/events2graph.groovy  out/biblio/biblio.ugent.be > data/biblio.gexf
+bin/events2graph.groovy  out/antwerpen/repository.uantwerpen.be > data/antwerpen.gexf
+bin/events2graph.groovy  out/liege/orbi.uliege.be/ > data/liege.gexf
+```
