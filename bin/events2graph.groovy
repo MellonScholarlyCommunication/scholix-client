@@ -35,9 +35,9 @@ if (! fh.isDirectory()) {
 loadCache()
 
 Runtime.runtime.addShutdownHook {
-  System.err.println("Shutting down...")
+  System.err.println("# Shutting down...")
   if( CLEANUP_REQUIRED ) {
-    System.err.println("Cleaning up...")
+    System.err.println("# Cleaning up...")
     writeJson(CACHE_FILE,CACHE)
   }
 }
@@ -82,9 +82,10 @@ def subjectObjectGraph(path) {
                 nodeSet.add(subjectAuth)
                 nodeSet.add(objectAuth)
 
-                def key = "${subjectAuth}-${relationshipAuth}-${objectAuth}"
+                //def key = "${subjectAuth}-${relationshipAuth}-${objectAuth}"
+                def key = "${subjectAuth}-${objectAuth}"
 
-                if (edgeMap.containsKey(key)) {
+                if (edgeMap[key]) {
                     edgeMap[key]['weight'] += 1
                 }
                 else {
@@ -96,22 +97,22 @@ def subjectObjectGraph(path) {
                     ]
                 }
 
-                System.err.println("... ${subjectAuth} ${relationshipAuth} ${objectAuth}")
+                System.err.println("<${subject}> <${relationship}> <${object_r}> .")
             }
             else if (context.equals(object)) {
                 def subject_r = resolve(subject)
-
 
                 def subjectAuth      = (new URL(subject_r)).getAuthority()
                 def relationshipAuth = (new URL(relationship)).getPath().replaceAll(".*/","")
                 def objectAuth       = (new URL(object)).getAuthority()
 
-                def key = "${subjectAuth}-${relationshipAuth}-${objectAuth}"
+                //def key = "${subjectAuth}-${relationshipAuth}-${objectAuth}"
+                def key = "${subjectAuth}-${objectAuth}"
 
                 nodeSet.add(subjectAuth)
                 nodeSet.add(objectAuth)
 
-                if (edgeMap.containsKey(key)) {
+                if (edgeMap[key]) {
                     edgeMap[key]['weight'] += 1
                 }
                 else {
@@ -123,10 +124,10 @@ def subjectObjectGraph(path) {
                     ]
                 }
 
-                System.err.println("... ${subjectAuth} ${relationshipAuth} ${objectAuth}")
+                System.err.println("<${subject_r}> <${relationship}> <${object}> .")
             }
             else {
-                System.err.println("${it} context error");
+                System.err.println("# ${it} context error");
             }
         }
     }
@@ -200,7 +201,7 @@ def resolve(url) {
 }
 
 def resolve_network(url) {
-    System.err.println("..resolving ${url}")
+    System.err.println("# ..resolving ${url}")
 
     def connection = new URL(url).openConnection()
 
