@@ -91,7 +91,6 @@ def subjectObjectGraph(path) {
                 else {
                     edgeMap[key] = [
                         'subject': subjectAuth ,
-                        'relationship': relationshipAuth ,
                         'object' : objectAuth ,
                         'weight' : 1
                     ]
@@ -118,7 +117,6 @@ def subjectObjectGraph(path) {
                 else {
                     edgeMap[key] = [
                         'subject': subjectAuth ,
-                        'relationship': relationshipAuth ,
                         'object' : objectAuth ,
                         'weight' : 1
                     ]
@@ -154,10 +152,9 @@ def subjectObjectGraph(path) {
         k, v -> {
             def source = v['subject']
             def target = v['object']
-            def label  = v['relationship']
             def weight = v['weight']
 
-            println "<edge id=\"${k}\" source=\"${source}\" target=\"${target}\" label=\"${label}\" weight=\"${weight}\"/>"
+            println "<edge id=\"${k}\" source=\"${source}\" target=\"${target}\" weight=\"${weight}\"/>"
         }
     }
 
