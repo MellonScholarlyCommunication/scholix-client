@@ -1,3 +1,5 @@
+**Deprecated** These tools us a deprecated version of the Scholix API. A new version of the tools is available at https://github.com/MellonScholarlyCommunication/scholix-client-3
+
 # Scholix Client
 
 Groovy tools to generate LDN Notifications following our [Mellon Spec](https://mellonscholarlycommunication.github.io/spec-notifications/#the-artifact-context)
